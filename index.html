@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Account Checker</title>
+    <style>
+        /* Reset default margin and padding */
+        body, h1, h2, p, ul, li {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Set a background color */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* Center the content vertically and horizontally */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Style the main content container */
+        .content {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        /* Style the file upload inputs and labels */
+        input[type="file"] {
+            display: none;
+        }
+
+        label {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        label:hover {
+            background-color: #2980b9;
+        }
+
+        /* Style the file name labels */
+        .file-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* Style the user count labels */
+        .user-count {
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Style the "Check Accounts" button */
+        button {
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        /* Style the results */
+        h2 {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Instagram Account Checker</h1>
+
+            <label for="followingFile">Upload Following HTML File:</label>
+            <input type="file" id="followingFile" accept=".html">
+            <p class="file-label" id="followingFileName"></p>
+            <p class="user-count" id="followingCount"></p>
+
+            <label for="followerFile">Upload Follower HTML File:</label>
+            <input type="file" id="followerFile" accept=".html">
+            <p class="file-label" id="followerFileName"></p>
+            <p class="user-count" id="followerCount"></p>
+
+            <button onclick="checkAccounts()">Check Accounts</button>
+
+            <h2>Accounts Not Following Back (Username)</h2>
+            <ul id="results">
+                <!-- JavaScript will populate this list -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Function to update file name label and user count label
+        function updateLabels(inputId, labelId, countId) {
+            const fileInput = document.getElementById(inputId);
+            const fileNameLabel = document.getElementById(labelId);
+            const userCountLabel = document.getElementById(countId);
+
+            if (fileInput.files.length > 0) {
+                fileNameLabel.style.display = 'block';
+                fileNameLabel.textContent = "Selected " + fileInput.name + " File: " + fileInput.files[0].name;
+
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = async function() {
+                    const response = reader.result;
+                    const userList = Array.from(new DOMParser().parseFromString(response, 'text/html').querySelectorAll("a[target='_blank']"), e => e.textContent);
+                    userCountLabel.style.display = 'block';
+                    userCountLabel.textContent = `User Count: ${userList.length}`;
+                };
+
+                reader.readAsText(file);
+            } else {
+                fileNameLabel.style.display = 'none';
+                fileNameLabel.textContent = '';
+                userCountLabel.style.display = 'none';
+                userCountLabel.textContent = '';
+            }
+        }
+
+        // Update file name labels and user count labels when a file is selected
+        document.getElementById('followingFile').addEventListener('change', () => {
+            updateLabels('followingFile', 'followingFileName', 'followingCount');
+        });
+
+        document.getElementById('followerFile').addEventListener('change', () => {
+            updateLabels('followerFile', 'followerFileName', 'followerCount');
+        });
+
+        async function fetchAccounts() {
+            const followingInput = document.getElementById('followingFile');
+            const followerInput = document.getElementById('followerFile');
+
+            const followingFile = followingInput.files[0];
+            const followerFile = followerInput.files[0];
+
+            if (!followingFile || !followerFile) {
+                alert('Please select both files.');
+                return;
+            }
+
+            const followingResponse = await followingFile.text();
+            const followerResponse = await followerFile.text();
+
+            const followingList = Array.from(new DOMParser().parseFromString(followingResponse, 'text/html').querySelectorAll("a[target='_blank']"), e => e.textContent);
+            const followerList = Array.from(new DOMParser().parseFromString(followerResponse, 'text/html').querySelectorAll("a[target='_blank']"), e => e.textContent);
+
+            const notFollowingBack = followingList.filter(account => !followerList.includes(account));
+
+            const resultsList = document.getElementById('results');
+            resultsList.innerHTML = ''; // Clear previous results
+
+            notFollowingBack.forEach(account => {
+                const li = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = 'https://instagram.com/' + account;
+                link.textContent = account;
+                li.appendChild(link);
+                resultsList.appendChild(li);
+            });
+        }
+
+        // Function to trigger the account checking
+        function checkAccounts() {
+            fetchAccounts();
+        }
+    </script>
+</body>
+</html>
