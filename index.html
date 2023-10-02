@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Account Checker</title>
+    <title>Instagram Unfollowers Checker</title>
     <style>
         /* Reset default margin and padding */
-        body, h1, h2, p, ul, li {
+        body, h2, p, ul, li {
             margin: 0;
             padding: 0;
         }
+		
+		h1 {
+			margin-top: 20px;
+			font-size: 30px;
+			text-shadow: 0px 4px 4px rgba(0, 255, 0, 1); /* Add shadow at the bottom right side */
+		}
 
         /* Set a background color */
         body {
@@ -52,11 +58,37 @@
             transition: background-color 0.3s ease;
             display: block;
             margin-bottom: 10px;
+			transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;            
+        }
+		
+	
+		label[for="followingFile"] {
+			background-color: #e72927;
+            box-shadow: 0px 3px 0px 0px #b50000; /* Add box shadow for the 3D effect */
         }
 
-        label:hover {
-            background-color: #2980b9;
+		label[for="followingFile"]:hover {
+            background-color: #e74c3c;
+            transform: translateY(2px); /* Add a slight downward movement on hover */
+            box-shadow: 0px 1px 0px 0px #b50000; /* Adjust the shadow on hover */
         }
+		
+        label[for="followerFile"] {
+			background-color: #e67e22;
+            box-shadow: 0px 3px 0px 0px #e6531e; /* Add box shadow for the 3D effect */
+        }
+
+        label[for="followerFile"]:hover {
+            background-color: #e6601e;
+            transform: translateY(2px); /* Add a slight downward movement on hover */
+            box-shadow: 0px 1px 0px 0px #e6531e; /* Adjust the shadow on hover */
+        }
+
+		label:active {
+            transform: translateY(4px); /* Add a deeper downward movement when pressed */
+            box-shadow: none; /* Remove the shadow when pressed */
+        }		
+		
 
         /* Style the file name labels */
         .file-label {
@@ -82,11 +114,19 @@
             cursor: pointer;
             font-size: 16px;
             width: 100%;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+            box-shadow: 0px 3px 0px 0px #1e942b; /* Add box shadow for the 3D effect */
         }
 
         button:hover {
             background-color: #27ae60;
+            transform: translateY(2px); /* Add a slight downward movement on hover */
+            box-shadow: 0px 1px 0px 0px #1e942b; /* Adjust the shadow on hover */
+        }
+
+        button:active {
+            transform: translateY(4px); /* Add a deeper downward movement when pressed */
+            box-shadow: none; /* Remove the shadow when pressed */
         }
 
         /* Style the results */
@@ -109,30 +149,65 @@
             color: #3498db;
             text-decoration: none;
         }
+		
+		#icon {
+			position: relative;
+			top: 5px; /* Lower the position of the icon by 10 pixels */
+		}
+
     </style>
 </head>
 <body>
     <div class="container">
         <div class="content">
-            <h1>Instagram Account Checker</h1>
+            <h1>Instagram Unfollowers Checker</h1>
 
-            <label for="followingFile">Upload Following HTML File:</label>
-            <input type="file" id="followingFile" accept=".html">
-            <p class="file-label" id="followingFileName"></p>
-            <p class="user-count" id="followingCount"></p>
+			<label for="followingFile">Upload <b style="color: #fff;">following.html</b></label>
+			<input type="file" id="followingFile" accept=".html" onchange="updateLabels('followingFile', 'followingFileName', 'followingCount')">
+			<p class="file-label" id="followingFileName"></p>
+			<p class="user-count" id="followingCount"></p>
+			
+			<label for="followerFile">Upload <b style="color: #fff;">followers.html</b></label>
+			<input type="file" id="followerFile" accept=".html" onchange="updateLabels('followerFile', 'followerFileName', 'followerCount')">
+			<p class="file-label" id="followerFileName"></p>
+			<p class="user-count" id="followerCount"></p>
 
-            <label for="followerFile">Upload Follower HTML File:</label>
-            <input type="file" id="followerFile" accept=".html">
-            <p class="file-label" id="followerFileName"></p>
-            <p class="user-count" id="followerCount"></p>
 
-            <button onclick="checkAccounts()">Check Accounts</button>
-
-            <h2>Accounts Not Following Back (Username)</h2>
+            <button onclick="showUnfollowers()">Show Unfollowers</button>
+			
+			<div id="guide">
+            <h4>How to get following.html and followers.html:</h4>
+            <p><b>On Mobile Devices:</b> Your activity > Download your information > Request Download</p>
+			</br>
+            <p><b>On Computers:</b> More > Settings > Privacy and security > Data download > Request download > Select HTML</p>
+            </br>
+			<p>You will then get an email with the archive of your account. Download and extract the archive, and in the <b>followers_and_following</b> folder, you will find the <b>following.html</b> and <b>followers.html</b></p>
+			</div>
+			
             <ul id="results">
                 <!-- JavaScript will populate this list -->
             </ul>
-        </div>
+			<hr>
+			<div>
+	    <span>
+        <b>Source code:</b> <a href="https://github.com/not-an-agent/show_instagram_unfollowers/tree/gh_pages">Show instagram unfollowers</a>
+    </span>
+    <span id="icon">
+        <a href="https://github.com/not-an-agent/show_instagram_unfollowers/tree/gh_pages">
+            <img id="github_icon" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="24" height="24"/>
+        </a>
+    </span>
+    </br>	
+    <span>
+        <b>Project based on:</b> <a href="https://github.com/bboymega/InstaFollowBack">InstaFollowBack</a>
+
+    </span>
+    <span id="icon">
+        <a href="https://github.com/bboymega/InstaFollowBack">
+            <img id="github_icon" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" width="24" height="24"/>
+        </a>
+    </span>
+</div>
     </div>
 
     <script>
@@ -143,20 +218,28 @@
             const userCountLabel = document.getElementById(countId);
 
             if (fileInput.files.length > 0) {
-                fileNameLabel.style.display = 'block';
-                fileNameLabel.textContent = "Selected " + fileInput.name + " File: " + fileInput.files[0].name;
+                const fileName = fileInput.files[0].name.toLowerCase();
+                if ((inputId === 'followingFile' && fileName.includes('following') && fileName.endsWith('.html')) || 
+                    (inputId === 'followerFile' && fileName.includes('followers') && fileName.endsWith('.html'))) {
+                    fileNameLabel.style.display = 'block';
+                    fileNameLabel.textContent = "Selected " + fileInput.name + " File: " + fileName;
 
-                const file = fileInput.files[0];
-                const reader = new FileReader();
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
 
-                reader.onload = async function() {
-                    const response = reader.result;
-                    const userList = Array.from(new DOMParser().parseFromString(response, 'text/html').querySelectorAll("a[target='_blank']"), e => e.textContent);
-                    userCountLabel.style.display = 'block';
-                    userCountLabel.textContent = `User Count: ${userList.length}`;
-                };
+                    reader.onload = async function() {
+                        const response = reader.result;
+                        const userList = Array.from(new DOMParser().parseFromString(response, 'text/html').querySelectorAll("a[target='_blank']"), e => e.textContent);
+                        userCountLabel.style.display = 'block';
+                        userCountLabel.textContent = `${inputId === 'followingFile' ? 'Following' : 'Followers'}: ${userList.length}`;
+                    };
 
-                reader.readAsText(file);
+                    reader.readAsText(file);
+                } else {
+                    // Invalid file format
+                    alert(`Please select a valid file with "${inputId === 'followingFile' ? 'following' : 'followers'}" and ".html" in the name.`);
+                    fileInput.value = ''; // Clear the file input
+                }
             } else {
                 fileNameLabel.style.display = 'none';
                 fileNameLabel.textContent = '';
@@ -165,16 +248,8 @@
             }
         }
 
-        // Update file name labels and user count labels when a file is selected
-        document.getElementById('followingFile').addEventListener('change', () => {
-            updateLabels('followingFile', 'followingFileName', 'followingCount');
-        });
-
-        document.getElementById('followerFile').addEventListener('change', () => {
-            updateLabels('followerFile', 'followerFileName', 'followerCount');
-        });
-
         async function fetchAccounts() {
+		
             const followingInput = document.getElementById('followingFile');
             const followerInput = document.getElementById('followerFile');
 
@@ -185,6 +260,11 @@
                 alert('Please select both files.');
                 return;
             }
+			
+			const guideDiv = document.getElementById('guide');
+			if (guideDiv) {
+				guideDiv.style.display = 'none';
+			}
 
             const followingResponse = await followingFile.text();
             const followerResponse = await followerFile.text();
@@ -205,12 +285,37 @@
                 li.appendChild(link);
                 resultsList.appendChild(li);
             });
-        }
+			
+			
+const button = document.querySelector('button');
+const resultsListCapture = document.getElementById('results');
+let countElement = document.getElementById('resultsCount');
 
-        // Function to trigger the account checking
-        function checkAccounts() {
+// Check if the countElement exists
+if (!countElement) {
+  countElement = document.createElement('p');
+  countElement.id = 'resultsCount';
+
+  // Create three line break elements
+  const lineBreak1 = document.createElement('br');
+  const lineBreak2 = document.createElement('br');
+
+  // Insert the line breaks and p element before the button
+  button.after(lineBreak1, lineBreak2, countElement);
+}
+
+function updateCount() {
+  countElement.innerHTML = `<strong>Unfollowers: ${resultsListCapture.children.length}</strong>`;
+
+}
+
+updateCount(); // Initial count
+        }		
+            // Function to trigger the account checking
+        function showUnfollowers() {
             fetchAccounts();
+
         }
-    </script>
+	</script>
 </body>
 </html>
